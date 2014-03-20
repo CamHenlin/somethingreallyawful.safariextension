@@ -36,6 +36,9 @@
 				<string>MetroJs.min.js</string>
 				<string>underscore-min.js</string>
 				<string>backbone-min.js</string>
+				<string>posts.js</string>
+				<string>forums.js</string>
+				<string>threads.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
