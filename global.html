@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>global page</title>
+<script type="text/javascript">
+
+function messageHandler(event) {
+
+}
+
+function settingChanged(event) {
+
+}
+
+function messageAll(message, data)
+{
+	for (var i = 0; i < safari.application.browserWindows.length; i++)
+	{
+		var browserWindow = safari.application.browserWindows[i];
+		for (var j = 0; j < browserWindow.tabs.length; j++)
+		{
+			var tab = browserWindow.tabs[j];
+			try{
+				tab.page.dispatchMessage(message, data);
+			} catch(err) {
+				// other pages might not accept messages, shrug
+			}
+		}
+	}
+}
+
+safari.application.addEventListener("message", messageHandler, false);
+safari.extension.settings.addEventListener("change", settingChanged, false);
+</script>
+</head>
+<body>
+</body>
+</html>
