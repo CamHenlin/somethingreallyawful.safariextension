@@ -15,6 +15,22 @@ var ThreadTileModel = Backbone.Model.extend({
 	}
 });
 
+function loadThread(threadId) {
+	$('.live-tile').liveTile("destroy");
+	$('body').empty();
+	sRA.getPosts(threadId, function(posts) {
+		var postTileCollection = new Backbone.Collection();
+		posts.forEach(function(post) {
+			postTileCollection.add(new PostTileModel(post));
+		});
+		var postTilesView = new PostTilesView({collection: postTileCollection});
+   		$("body").append( postTilesView.render().$el );
+			$("body").append( (new NewPostView()).render().$el );
+
+		$(".live-tile, .flip-list").not('.exclude').liveTile();
+	});
+}
+
 var ThreadTilesView = Backbone.View.extend({
 	template: _.template('<div class="tiles blue tile-group four-wide"></div>'),
 	initialize: function() {
@@ -39,18 +55,7 @@ var ThreadTileView = Backbone.View.extend({
 	model: ThreadTileModel,
 	events: {
         "click": function() {
-			$('.live-tile').liveTile("destroy");
-			$('body').empty();
-			sRA.getPosts(this.model.get("id"), function(posts) {
-				var postTileCollection = new Backbone.Collection();
-				posts.forEach(function(post) {
-					postTileCollection.add(new PostTileModel(post));
-				});
-				var postTilesView = new PostTilesView({collection: postTileCollection});
-		   		$("body").append( postTilesView.render().$el );
-
-				$(".live-tile, .flip-list").not('.exclude').liveTile();
-			});
+        	loadThread(this.model.get("id"));
          }
     },
 	template: _.template('\

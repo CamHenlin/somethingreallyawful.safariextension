@@ -45,7 +45,7 @@ var PostTileView = Backbone.View.extend({
 				<div style="font-size: 25px;"><%= author %></div> \
 				<div style="font-size: 25px;"><%= author %></div> \
 			</div> \
-			<div style="overflow-y: visible; width: 88%; height: 100%; background-color: #1ba1e2; padding: 5px;" class="live-tile three-wide exclude"> \
+			<div style="overflow-y: visible; width: 85%; height: 100%; background-color: #1ba1e2; padding: 5px;" class="live-tile three-wide exclude"> \
 				<%= postText %> \
 				<br> \
 				<p style="font-size: 9px"> <%= postTime %></p> \

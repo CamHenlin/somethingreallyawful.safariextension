@@ -5,7 +5,7 @@ var colors = [
 
 // sRA.getPosts(3522839, function(posts) { posts.forEach(function(post) { console.log(post.postText); }); } );
 
-
+var currentThread = null;
 
 $('doccument').ready(function() {
 	$('body').empty();
@@ -21,14 +21,3 @@ $('doccument').ready(function() {
 	});
 });
 
-function submitPost() {
-	sRA.newPost(
-		$("#threadId").val(),
-		$("#postText").val(),
-		function() {
-			alert('posted!');
-			$("#postText").val("");
-			$("#threadId").val("");
-		}
-	);
-}

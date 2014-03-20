@@ -39,6 +39,7 @@
 				<string>posts.js</string>
 				<string>forums.js</string>
 				<string>threads.js</string>
+				<string>newpost.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
