@@ -34,6 +34,8 @@
 			<array>
 				<string>jquery-2.1.0.min.js</string>
 				<string>MetroJs.min.js</string>
+				<string>underscore-min.js</string>
+				<string>backbone-min.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
