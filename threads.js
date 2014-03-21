@@ -15,6 +15,28 @@ var ThreadTileModel = Backbone.Model.extend({
 	}
 });
 
+function getThreads(name, id) {
+	$('.live-tile').liveTile("destroy");
+	$('body').empty();
+	currentForumName = name;
+	currentForum = id;
+	sRA.getThreads(id, function(threads) {
+		var threadTileCollection = new Backbone.Collection();
+		threads.forEach(function(thread) {
+			threadTileCollection.add(new ThreadTileModel(thread));
+		});
+		var threadTilesView = new ThreadTilesView({collection: threadTileCollection});
+		var forumHeaderModel = new ForumHeaderModel();
+		forumHeaderModel.set("name", currentForumName);
+		forumHeaderModel.set("id", currentForum);
+		var forumHeaderView = new ForumHeaderView({model: forumHeaderModel});
+   		$("body").prepend( forumHeaderView.render().$el );
+   		$("body").append( threadTilesView.render().$el );
+
+		$(".live-tile, .flip-list").not(".exclude").liveTile();
+	});
+}
+
 function loadThread(threadId, page) {
 	currentThread = threadId;
 	currentThreadPage = page;
@@ -29,7 +51,13 @@ function loadThread(threadId, page) {
 										 .replace("bbc-block code\"", "\" style=\"background-color:#00aba9;\"");
 			postTileCollection.add(new PostTileModel(post));
 		});
+		var threadHeaderModel = new ThreadHeaderModel();
+		threadHeaderModel.set("id", currentForum);
+		threadHeaderModel.set("name", currentForumName);
+		var threadHeaderView = new ThreadHeaderView({model: threadHeaderModel});
+
 		var postTilesView = new PostTilesView({collection: postTileCollection});
+   		$("body").prepend( threadHeaderView.render().$el );
    		$("body").append( postTilesView.render().$el );
 		$("body").append( (new NewPostView()).render().$el );
 
@@ -93,28 +121,30 @@ var ThreadHeaderModel = Backbone.Model.extend({
 });
 
 var ThreadHeaderView = Backbone.View.extend({
-	model: ThreadTileModel,
+	model: ThreadHeaderModel,
 	events: {
-        "click #back": function() {
-        	loadThread(this.model.get("id"), Math.floor(this.model.get("replies") / 40));
-         }
+        "click #back": "getThreads"
+    },
+    getForums: function() {
+    	getThreads(currentForumName, currentForum);
     },
 	template: _.template('\
 		<header> \
         <div class="site-title"><a href="/"><%= name %></a></div> \
     	</header> \
-    	<div style="width: 200px; height: 200px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+    	<div id="back" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
-			<span class="tile-title">back to forums listing</span> \
+			<span class="tile-title">back to thread listing</span> \
 			<div style="font-size: 20px;">get out</div> \
 			<div style="font-size: 20px;">seriously</div> \
 		</div> \
     '),
 	initialize: function() {
 		this.model.bind("change", this.render, this);
+		_.bindAll(this, 'render');
 	},
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.setElement(this.template());
 		return this;
 	}
 });

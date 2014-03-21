@@ -9,6 +9,22 @@ var ForumTileModel = Backbone.Model.extend({
 	}
 });
 
+function getForums() {
+	sRA.getForums(function(forums) {
+		$('body').empty();
+		var forumsTileCollection = new Backbone.Collection();
+		forums.forEach(function(forums) {
+			forumsTileCollection.add(new ForumTileModel(forums));
+		});
+		var forumTilesView = new ForumTilesView({collection: forumsTileCollection});
+		var forumsHeaderView = new ForumsHeaderView();
+   		$("body").prepend( forumsHeaderView.render().$el );
+   		$("body").append( forumTilesView.render().$el );
+
+		$(".live-tile, .flip-list").not(".exclude").liveTile();
+	});
+}
+
 var ForumTilesView = Backbone.View.extend({
 	template: _.template('<div style="width: 100%;" class="tiles blue tile-group four-wide"></div>'),
 	initialize: function() {
@@ -33,25 +49,7 @@ var ForumTileView = Backbone.View.extend({
 	model: ForumTileModel,
 	events: {
         "click": function() {
-			$('.live-tile').liveTile("destroy");
-			$('body').empty();
-			currentForumName = this.model.get("name");
-			currentForum = this.model.get("id");
-        	sRA.getThreads(this.model.get("id"), function(threads) {
-				var threadTileCollection = new Backbone.Collection();
-				threads.forEach(function(thread) {
-					threadTileCollection.add(new ThreadTileModel(thread));
-				});
-				var threadTilesView = new ThreadTilesView({collection: threadTileCollection});
-				var threadHeaderModel = new ThreadHeaderModel();
-				threadHeaderModel.set("name", currentForumName);
-				threadHeaderModel.set("id", currentForum);
-				var threadHeaderView = new ThreadHeaderView(threadHeaderModel);
-		   		$("body").append( threadHeaderView.render().$el );
-		   		$("body").append( threadTilesView.render().$el );
-
-				$(".live-tile, .flip-list").not(".exclude").liveTile();
-			});
+        	getThreads(this.model.get("name"), this.model.get("id"));
        	}
     },
 	template: _.template('\
@@ -71,3 +69,56 @@ var ForumTileView = Backbone.View.extend({
 	}
 });
 
+var ForumHeaderModel = Backbone.Model.extend({
+	defaults: function () {
+		return {
+			"id"         : "",
+			"name"       : "",
+			"forumId"    : ""
+		};
+	}
+});
+
+var ForumHeaderView = Backbone.View.extend({
+	model: ForumHeaderModel,
+	events: {
+        "click #back": "getForums"
+    },
+    getForums: function() {
+    	console.log("getting forums...");
+    	getForums();
+    },
+	template: _.template('\
+		<header> \
+        <div class="site-title"><a href="/"><%= name %></a></div> \
+    	</header> \
+    	<div id="back" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">back to forums listing</span> \
+			<div style="font-size: 20px;">get out</div> \
+			<div style="font-size: 20px;">seriously</div> \
+		</div> \
+    '),
+	initialize: function() {
+		this.model.bind("change", this.render, this);
+		_.bindAll(this, 'render');
+	},
+	render: function() {
+		this.setElement(this.template(this.model.toJSON()));
+		return this;
+	}
+});
+
+var ForumsHeaderView = Backbone.View.extend({
+	template: _.template('\
+		<header> \
+        <div class="site-title"><a href="/">something awful</a></div> \
+    	</header> \
+    '),
+	initialize: function() {
+	},
+	render: function() {
+		this.setElement(this.template());
+		return this;
+	}
+});

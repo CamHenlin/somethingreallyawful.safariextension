@@ -15,15 +15,6 @@ $('doccument').ready(function() {
 	$('body').addClass("projects-metrojs");
 	$('body').addClass("desktop");
 	$('body').empty();
-	sRA.getForums(function(forums) {
-		var forumsTileCollection = new Backbone.Collection();
-		forums.forEach(function(forums) {
-			forumsTileCollection.add(new ForumTileModel(forums));
-		});
-		var forumTilesView = new ForumTilesView({collection: forumsTileCollection});
-   		$("body").append( forumTilesView.render().$el );
-
-		$(".live-tile, .flip-list").not(".exclude").liveTile();
-	});
+	getForums();
 });
 

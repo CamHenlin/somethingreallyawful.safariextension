@@ -8,3 +8,20 @@ a {
 	font-weight: bold !important;
 }
 
+.site-title {
+	float:left;
+	margin:-40px auto 0 40px;
+	-moz-transition:font-size .3s; /* Firefox 4 */
+	-webkit-transition:font-size .3s; /* Safari and Chrome */
+	-o-transition:font-size .3s; /* Opera */
+	transition:font-size .3s;
+}
+
+.site-title a {
+    font-size:6em;
+    text-decoration:none;
+    -moz-transition:font-size .3s; /* Firefox 4 */
+    -webkit-transition:font-size .3s; /* Safari and Chrome */
+    -o-transition:font-size .3s; /* Opera */
+    transition:font-size .3s;
+}
