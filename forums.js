@@ -56,7 +56,7 @@ var ForumTileView = Backbone.View.extend({
 	template: _.template('\
 		<div style="width: 200px; height: 200px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 		data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
-			<span class="tile-title"><%= description %></span> \
+			<span class="tile-title"><%= name %> <%= description %></span> \
 			<div style="font-size: 30px;"><%= name %></div> \
 			<div style="font-size: 20px;"> moderated by <%= moderators %></div> \
 		</div> \
