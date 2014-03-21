@@ -11,6 +11,7 @@ var ForumTileModel = Backbone.Model.extend({
 
 function getForums() {
 	sRA.getForums(function(forums) {
+		$('.live-tile').liveTile("destroy");
 		$('body').empty();
 		var forumsTileCollection = new Backbone.Collection();
 		forums.forEach(function(forums) {
@@ -64,7 +65,7 @@ var ForumTileView = Backbone.View.extend({
 		this.model.bind("change", this.render, this);
 	},
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });
@@ -82,20 +83,19 @@ var ForumHeaderModel = Backbone.Model.extend({
 var ForumHeaderView = Backbone.View.extend({
 	model: ForumHeaderModel,
 	events: {
-        "click #back": "getForums"
+        'click #backToForumList': 'getForums'
     },
     getForums: function() {
-    	console.log("getting forums...");
     	getForums();
     },
 	template: _.template('\
 		<header> \
-        <div class="site-title"><a href="/"><%= name %></a></div> \
+        <div class="site-title"><a><%= name %></a></div> \
     	</header> \
-    	<div id="back" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+    	<div id="backToForumList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
 			<span class="tile-title">back to forums listing</span> \
-			<div style="font-size: 20px;">get out</div> \
+			<div style="font-size: 25px;">get out</div> \
 			<div style="font-size: 20px;">seriously</div> \
 		</div> \
     '),
@@ -104,7 +104,7 @@ var ForumHeaderView = Backbone.View.extend({
 		_.bindAll(this, 'render');
 	},
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });
@@ -118,7 +118,7 @@ var ForumsHeaderView = Backbone.View.extend({
 	initialize: function() {
 	},
 	render: function() {
-		this.setElement(this.template());
+		this.$el.html(this.template());
 		return this;
 	}
 });

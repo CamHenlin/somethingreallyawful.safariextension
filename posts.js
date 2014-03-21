@@ -34,7 +34,6 @@ var PostTileView = Backbone.View.extend({
 	model: PostTileModel,
 	events: {
         "click": function() {
-			console.log(this.model.get("id"));
        	}
     },
 	template: _.template('\
@@ -54,9 +53,10 @@ var PostTileView = Backbone.View.extend({
     '),
 	initialize: function() {
 		this.model.bind("change", this.render, this);
+		_.bindAll(this, 'render');
 	},
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });

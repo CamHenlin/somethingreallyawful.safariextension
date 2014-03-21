@@ -37,9 +37,10 @@ function getThreads(name, id) {
 	});
 }
 
-function loadThread(threadId, page) {
+function loadThread(threadId, page, name) {
 	currentThread = threadId;
 	currentThreadPage = page;
+	currentThreadName = name;
 	$('.live-tile').liveTile("destroy");
 	$('body').empty();
 	sRA.getPosts(threadId, function(posts) {
@@ -53,7 +54,7 @@ function loadThread(threadId, page) {
 		});
 		var threadHeaderModel = new ThreadHeaderModel();
 		threadHeaderModel.set("id", currentForum);
-		threadHeaderModel.set("name", currentForumName);
+		threadHeaderModel.set("name", currentThreadName);
 		var threadHeaderView = new ThreadHeaderView({model: threadHeaderModel});
 
 		var postTilesView = new PostTilesView({collection: postTileCollection});
@@ -90,7 +91,7 @@ var ThreadTileView = Backbone.View.extend({
 	model: ThreadTileModel,
 	events: {
         "click": function() {
-        	loadThread(this.model.get("id"), Math.floor(this.model.get("replies") / 40));
+        	loadThread(this.model.get("id"), Math.floor(this.model.get("replies") / 40), this.model.get("name"));
          }
     },
 	template: _.template('\
@@ -105,7 +106,7 @@ var ThreadTileView = Backbone.View.extend({
 		this.model.bind("change", this.render, this);
 	},
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });
@@ -123,19 +124,19 @@ var ThreadHeaderModel = Backbone.Model.extend({
 var ThreadHeaderView = Backbone.View.extend({
 	model: ThreadHeaderModel,
 	events: {
-        "click #back": "getThreads"
+        'click #backToThreadList': 'getThreads'
     },
-    getForums: function() {
+    getThreads: function() {
     	getThreads(currentForumName, currentForum);
     },
 	template: _.template('\
 		<header> \
-        <div class="site-title"><a href="/"><%= name %></a></div> \
+        	<div class="site-title"><a><%= name %></a></div> \
     	</header> \
-    	<div id="back" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+    	<div id="backToThreadList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
 			<span class="tile-title">back to thread listing</span> \
-			<div style="font-size: 20px;">get out</div> \
+			<div style="font-size: 25px;">get out</div> \
 			<div style="font-size: 20px;">seriously</div> \
 		</div> \
     '),
@@ -144,7 +145,7 @@ var ThreadHeaderView = Backbone.View.extend({
 		_.bindAll(this, 'render');
 	},
 	render: function() {
-		this.setElement(this.template());
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });

@@ -7,7 +7,7 @@ var NewPostView = Backbone.View.extend({
 			currentThread,
 			$("#posttext").text(),
 			function() {
-				loadThread(currentThread, currentThreadPage);
+				loadThread(currentThread, currentThreadPage, currentThreadName);
 			}
 		);
     },

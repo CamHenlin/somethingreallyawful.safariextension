@@ -7,6 +7,7 @@ var colors = [
 
 var currentThread = null;
 var currentThreadPage = null;
+var currentThreadName = null;
 var currentForum = null;
 var currentForumName = null;
 
