@@ -27,13 +27,17 @@ var PostTilesView = Backbone.View.extend({
 		var postTile = new PostTileView({ model: model });
 		this.$el.append(postTile.render().$el);
 		return this;
-	}
+	},
 });
 
 var PostTileView = Backbone.View.extend({
 	model: PostTileModel,
 	events: {
-        "click": function() {
+        "click #quote": function() {
+        	$("#posttext").append('\
+				[quote="' + this.model.get("author") + '" post="' + this.model.get("id") + '"]\
+				' + this.model.get("postText") + '\
+				[/quote]');
        	}
     },
 	template: _.template('\
@@ -48,6 +52,12 @@ var PostTileView = Backbone.View.extend({
 				<%= postText %> \
 				<br> \
 				<p style="font-size: 9px"> <%= postTime %></p> \
+				<div id="quote" style="float: left; width: 150px;" class="live-tile one-wide <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+				data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+					<span class="tile-title">quote this post</span> \
+					<div style="font-size: 20px;">it\'s a good post</div> \
+					<div style="font-size: 25px;">do it</div> \
+				</div> \
 			</div> \
 		</div> \
     '),
