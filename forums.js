@@ -83,10 +83,14 @@ var ForumHeaderModel = Backbone.Model.extend({
 var ForumHeaderView = Backbone.View.extend({
 	model: ForumHeaderModel,
 	events: {
-        'click #backToForumList': 'getForums'
+        'click #backToForumList': 'getForums',
+        'click #refreshThreadList': 'getThreads'
     },
     getForums: function() {
     	getForums();
+    },
+    getThreads: function() {
+    	getThreads(currentForumName, currentForum);
     },
 	template: _.template('\
 		<header> \
@@ -97,6 +101,12 @@ var ForumHeaderView = Backbone.View.extend({
 			<span class="tile-title">back to forums listing</span> \
 			<div style="font-size: 25px;">get out</div> \
 			<div style="font-size: 20px;">seriously</div> \
+		</div> \
+		<div id="refreshThreadList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">refresh the forum</span> \
+			<div style="font-size: 25px;">f5 f5 f5</div> \
+			<div style="font-size: 15px;">you know you want to</div> \
 		</div> \
     '),
 	initialize: function() {
