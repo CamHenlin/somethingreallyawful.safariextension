@@ -6,8 +6,14 @@ var colors = [
 // sRA.getPosts(3522839, function(posts) { posts.forEach(function(post) { console.log(post.postText); }); } );
 
 var currentThread = null;
+var currentThreadPage = null;
+var currentForum = null;
+var currentForumName = null;
 
 $('doccument').ready(function() {
+	$('body').removeClass("forumhome");
+	$('body').addClass("projects-metrojs");
+	$('body').addClass("desktop");
 	$('body').empty();
 	sRA.getForums(function(forums) {
 		var forumsTileCollection = new Backbone.Collection();

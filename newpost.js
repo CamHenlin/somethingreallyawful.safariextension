@@ -1,23 +1,31 @@
 var NewPostView = Backbone.View.extend({
 	events: {
-        "#postsubmit click": function() {
-			sRA.newPost(
-				currentThread,
-				$("#posttext").val(),
-				function() {
-					loadThread(this.model.get("id"));
-				}
-			);
-         }
+        "click #postsubmit": "newPost"
+    },
+    newPost: function() {
+		sRA.newPost(
+			currentThread,
+			$("#posttext").text(),
+			function() {
+				loadThread(currentThread, currentThreadPage);
+			}
+		);
     },
 	template: _.template('\
-		<div style="width: 100%" class="live-tile blue exclude"> \
-			<span>New Post:</span>\
-			<div class="live-tile blue" style="width: 150px; height: 50px; float: right; color: white; background-color: #1ba1e2;" id="postsubmit"> submit post </div> \
-			<div class="live-tile white" style="width: 75%;float: right; color: black;" contenteditable=true id="posttext"></div> \
+		<div style="width: 95%;padding-left: auto;padding-right:auto;" class="blue exclude"> \
+			<center><h2>New Post:</h2></center><br>\
+			<div style="float: right; width: 150px;" id="postsubmit" class="live-tile one-wide <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+				<span class="tile-title">new reply</span> \
+				<div style="font-size: 25px;">post post post</div> \
+				<div style="font-size: 25px;">click me</div> \
+			</div> \
+			<div class="white" style="background-color: white; width: 70%; height: 400px;float: left; color: black; margin-left: 175px; margin-bottom:100px;" contenteditable=true id="posttext"></div> \
 		</div> \
     '),
-	initialize: function() {},
+	initialize: function() {
+		_.bindAll(this, 'render');
+	},
 	render: function() {
 		this.setElement(this.template());
 		return this;

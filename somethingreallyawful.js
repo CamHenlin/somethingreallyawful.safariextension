@@ -94,7 +94,7 @@ var somethingReallyAwful = function() {
 	};
 
 	/**
-	 * [getForums description]
+	 * [getForums gets the list of the forums. this list includes subforums! subforums, instead of a list of moderators, have "subforum" filling that moderator. description will also be subforum]
 	 * @param  {Function} callback [description]
 	 * @return {[type]}            [description]
 	 */
@@ -117,6 +117,20 @@ var somethingReallyAwful = function() {
 							)
 						);
 					}
+				});
+
+				// get subforums
+				threadEls = $(pageData).find(".subforums a");
+				threadEls.each(function(subforumItem) {
+					subforumItem = $(threadEls[subforumItem])[0];
+					forums.push(
+						new Forum (
+							subforumItem.href.split('forumid=')[1], // id
+							subforumItem.text, // name
+							"subforum", // description
+							"subforum" // moderators
+						)
+					)
 				});
 
 				callback(forums);
