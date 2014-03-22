@@ -20,7 +20,7 @@ var NewPostView = Backbone.View.extend({
 				<div style="font-size: 25px;">post post post</div> \
 				<div style="font-size: 25px;">click me</div> \
 			</div> \
-			<div class="white" style="background-color: white; width: 70%; height: 400px;float: left; color: black; margin-left: 175px; margin-bottom:100px;" contenteditable=true id="posttext"></div> \
+			<div class="white" style="background-color: white; width: 70%; height: 400px;float: left; color: black; margin-left: 175px; margin-bottom:20px;" contenteditable=true id="posttext"></div> \
 		</div> \
     '),
 	initialize: function() {

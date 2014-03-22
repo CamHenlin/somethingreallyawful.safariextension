@@ -10,7 +10,8 @@ var ThreadTileModel = Backbone.Model.extend({
 			"iconImage"  : "",
 			"killedBy"   : "",
 			"rating"     : "",
-			"votes"      : ""
+			"votes"      : "",
+			"unread"	 : ""
 		};
 	}
 });
@@ -18,6 +19,9 @@ var ThreadTileModel = Backbone.Model.extend({
 function getThreads(name, id) {
 	$('.live-tile').liveTile("destroy");
 	$('body').empty();
+	currentThread = null;
+	currentThreadPage = null;
+	currentThreadName = null;
 	currentForumName = name;
 	currentForum = id;
 	sRA.getThreads(id, function(threads) {
@@ -38,6 +42,7 @@ function getThreads(name, id) {
 }
 
 function loadThread(threadId, page, name) {
+	console.log("loading page " + page + " type " + typeof(page));
 	currentThread = threadId;
 	currentThreadPage = page;
 	currentThreadName = name;
@@ -55,16 +60,31 @@ function loadThread(threadId, page, name) {
 		var threadHeaderModel = new ThreadHeaderModel();
 		threadHeaderModel.set("id", currentForum);
 		threadHeaderModel.set("name", currentThreadName);
+		threadHeaderModel.set("name", currentThreadName);
 		var threadHeaderView = new ThreadHeaderView({model: threadHeaderModel});
+		var threadFooterView = new ThreadFooterView({model: threadHeaderModel});
 
 		var postTilesView = new PostTilesView({collection: postTileCollection});
    		$("body").prepend( threadHeaderView.render().$el );
    		$("body").append( postTilesView.render().$el );
 		$("body").append( (new NewPostView()).render().$el );
+   		$("body").append( threadFooterView.render().$el );
 
 		$(".live-tile, .flip-list").not('.exclude').liveTile();
+
+		/*
+			using a timer here and feel like i need to explain myself. this code will be reached before the page is done rendering, so on longer threads
+			it will end up in the middle of the page instead of on the page you want. timer gives the page a chance to render.
+		 */
+		setTimeout(function() {
+			var lastSeen = $(".sra-seen");
+			if (lastSeen.length !== 0) {
+				scrollToElement(lastSeen[lastSeen.length - 1], 500, 0);
+			}
+		}, 500);
+
 	},
-	page + 1);
+	page);
 }
 
 var ThreadTilesView = Backbone.View.extend({
@@ -91,7 +111,8 @@ var ThreadTileView = Backbone.View.extend({
 	model: ThreadTileModel,
 	events: {
         "click": function() {
-        	loadThread(this.model.get("id"), Math.floor(this.model.get("replies") / 40), this.model.get("name"));
+        	currentThreadReplies = this.model.get("replies");
+        	loadThread(this.model.get("id"), Math.ceil((this.model.get("replies") - this.model.get("unread")) / 40), this.model.get("name"), this.model.get("replies"));
          }
     },
 	template: _.template('\
@@ -116,7 +137,8 @@ var ThreadHeaderModel = Backbone.Model.extend({
 		return {
 			"id"         : "",
 			"name"       : "",
-			"forumId"    : ""
+			"forumId"    : "",
+			"replies"	 : ""
 		};
 	}
 });
@@ -124,8 +146,11 @@ var ThreadHeaderModel = Backbone.Model.extend({
 var ThreadHeaderView = Backbone.View.extend({
 	model: ThreadHeaderModel,
 	events: {
-        'click #backToThreadList': 'getThreads',
-        'click #refreshPostList': 'getPosts'
+		'click #backToThreadList': 'getThreads',
+		'click #refreshPostList': 'getPosts',
+		'click #nextPage': 'nextPage',
+		'click #previousPage': 'previousPage',
+		'click #lastPage': 'lastPage'
     },
     getThreads: function() {
     	getThreads(currentForumName, currentForum);
@@ -133,10 +158,19 @@ var ThreadHeaderView = Backbone.View.extend({
     getPosts: function() {
     	loadThread(currentThread, currentThreadPage, currentThreadName);
     },
+    nextPage: function() {
+    	loadThread(currentThread, ++currentThreadPage, currentThreadName);
+    },
+    previousPage: function() {
+    	loadThread(currentThread, --currentThreadPage, currentThreadName);
+    },
+    lastPage: function() {
+    	loadThread(currentThread, Math.ceil(currentThreadReplies / 40), currentThreadName);
+    },
 	template: _.template('\
 		<header> \
         	<div class="site-title"><a><%= name %></a></div> \
-    	</header> \
+    	</header><br><br><br><br> \
     	<div id="backToThreadList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
 			<span class="tile-title">back to thread listing</span> \
@@ -149,6 +183,92 @@ var ThreadHeaderView = Backbone.View.extend({
 			<div style="font-size: 25px;">f5 f5 f5</div> \
 			<div style="font-size: 15px;">you know you want to</div> \
 		</div> \
+		<div id="nextPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the next page</span> \
+			<div style="font-size: 15px;">would you like to know more?</div> \
+			<div style="font-size: 15px;">you need to know more</div> \
+		</div> \
+		<div id="previousPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the previous page</span> \
+			<div style="font-size: 15px;">what happened?</div> \
+			<div style="font-size: 15px;">you have forgotten</div> \
+		</div> \
+		<div id="lastPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the last page</span> \
+			<div style="font-size: 25px;">tldr</div> \
+			<div style="font-size: 15px;">dont care</div> \
+		</div> \
+    '),
+	initialize: function() {
+		this.model.bind("change", this.render, this);
+		_.bindAll(this, 'render');
+	},
+	render: function() {
+		this.$el.html(this.template(this.model.toJSON()));
+		return this;
+	}
+});
+
+var ThreadFooterView = Backbone.View.extend({
+	model: ThreadHeaderModel,
+	events: {
+		'click #backToThreadList': 'getThreads',
+		'click #refreshPostList': 'getPosts',
+		'click #nextPage': 'nextPage',
+		'click #previousPage': 'previousPage',
+		'click #lastPage': 'lastPage'
+    },
+     getThreads: function() {
+    	getThreads(currentForumName, currentForum);
+    },
+    getPosts: function() {
+    	loadThread(currentThread, currentThreadPage, currentThreadName);
+    },
+    nextPage: function() {
+    	loadThread(currentThread, ++currentThreadPage, currentThreadName);
+    },
+    previousPage: function() {
+    	loadThread(currentThread, --currentThreadPage, currentThreadName);
+    },
+    lastPage: function() {
+    	loadThread(currentThread, Math.ceil(currentThreadReplies / 40), currentThreadName);
+    },
+	template: _.template('\
+		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><footer> \
+    	<div id="backToThreadList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">back to thread listing</span> \
+			<div style="font-size: 25px;">get out</div> \
+			<div style="font-size: 20px;">seriously</div> \
+		</div> \
+		<div id="refreshPostList" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">refresh the thread</span> \
+			<div style="font-size: 25px;">f5 f5 f5</div> \
+			<div style="font-size: 15px;">you know you want to</div> \
+		</div> \
+		<div id="nextPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the next page</span> \
+			<div style="font-size: 15px;">would you like to know more?</div> \
+			<div style="font-size: 15px;">you need to know more</div> \
+		</div> \
+		<div id="previousPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the previous page</span> \
+			<div style="font-size: 15px;">what happened?</div> \
+			<div style="font-size: 15px;">you have forgotten</div> \
+		</div> \
+		<div id="lastPage" style="width: 100px; height: 100px;" class="live-tile <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
+			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
+			<span class="tile-title">goes to the last page</span> \
+			<div style="font-size: 25px;">tldr</div> \
+			<div style="font-size: 15px;">dont care</div> \
+		</div> \
+		</footer> \
     '),
 	initialize: function() {
 		this.model.bind("change", this.render, this);

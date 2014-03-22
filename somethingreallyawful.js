@@ -11,7 +11,7 @@ var somethingReallyAwful = function() {
 	 * @param {[type]} votes    [thread votes contributing to rating]
 	 * @param {[type]} icon     [id of icon used by thread]
 	 */
-	var Thread = function (id, name, replies, views, author, authorId, iconImage, killedBy, rating, votes) {
+	var Thread = function (id, name, replies, views, author, authorId, iconImage, killedBy, rating, votes, unread) {
 		this.id         = id;
 		this.name       = name;
 		this.replies    = replies;
@@ -22,6 +22,7 @@ var somethingReallyAwful = function() {
 		this.killedBy   = killedBy;
 		this.rating     = rating;
 		this.votes 		= votes;
+		this.unread 	= unread;
 	};
 
 	/**
@@ -84,7 +85,8 @@ var somethingReallyAwful = function() {
 							$(threadTr).find('.icon').find('img').attr("src"), // iconimage
 							$($(threadTr).children()[7]).children()[1].textContent, // killed by
 							(typeof($($(threadTr).children()[6]).children()[0]) !== "undefined") ? $($(threadTr).children()[6]).children()[0].getAttribute('title').split(' votes - ')[1].split(' average')[0] : null, // rating
-							(typeof($($(threadTr).children()[6]).children()[0]) !== "undefined") ? $($(threadTr).children()[6]).children()[0].getAttribute('title').split(' votes -')[0] : null // votes
+							(typeof($($(threadTr).children()[6]).children()[0]) !== "undefined") ? $($(threadTr).children()[6]).children()[0].getAttribute('title').split(' votes -')[0] : null, // votes
+							($(threadTr).find(".count").text() !== "") ? parseInt($(threadTr).find(".count").text()) : 0 // unread
 						)
 					);
 				});

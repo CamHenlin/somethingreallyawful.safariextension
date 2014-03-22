@@ -29,7 +29,7 @@ var PostTilesView = Backbone.View.extend({
 		var postTile = new PostTileView({ model: model });
 		this.$el.append(postTile.render().$el);
 		return this;
-	},
+	}
 });
 
 var PostTileView = Backbone.View.extend({
@@ -43,7 +43,7 @@ var PostTileView = Backbone.View.extend({
        	}
     },
 	template: _.template('\
-		<div class="tile-group one-wide first" style="width: 95%; margin: 10px;"> \
+		<div class="tile-group one-wide first <%= (seen) ? "sra-seen" : "sra-notseen" %>" style="width: 95%; margin: 10px;"> \
 			<div style="float: left; width: 150px;" class="live-tile one-wide <%= colors[Math.floor((Math.random()*6))] %> " data-speed="1750" \
 			data-delay="<%= Math.floor((Math.random()*5000)+2000) %>"> \
 				<span class="tile-title"><%= postTime %></span> \

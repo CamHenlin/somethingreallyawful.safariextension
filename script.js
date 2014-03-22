@@ -8,6 +8,7 @@ var colors = [
 var currentThread = null;
 var currentThreadPage = null;
 var currentThreadName = null;
+var currentThreadReplies = null;
 var currentForum = null;
 var currentForumName = null;
 
@@ -19,3 +20,20 @@ $('doccument').ready(function() {
 	getForums();
 });
 
+/**
+ * [scrollToElement stolen directly from http://www.dconnell.co.uk/blog/index.php/2012/03/12/scroll-to-any-element-using-jquery/]
+ * @param  {[type]} selector       [description]
+ * @param  {[type]} time           [description]
+ * @param  {[type]} verticalOffset [description]
+ * @return {[type]}                [description]
+ */
+function scrollToElement(selector, time, verticalOffset) {
+    time = typeof(time) != 'undefined' ? time : 1000;
+    verticalOffset = typeof(verticalOffset) != 'undefined' ? verticalOffset : 0;
+    element = $(selector);
+    offset = element.offset();
+    offsetTop = offset.top + verticalOffset;
+    $('html, body').animate({
+        scrollTop: offsetTop
+    }, time);
+}
